@@ -4,11 +4,11 @@ namespace DefaultNamespace
 {
     public class Manager : MonoBehaviour
     {
-        private AddChess addChess;
+        private AddChess _addChess;
 
         private void Start()
         {
-            addChess = new AddChess();
+            _addChess = new AddChess();
             
         }
 
@@ -36,9 +36,35 @@ namespace DefaultNamespace
         
             var clickScreenPointVector3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var clickScreenPointVector2 = new Vector2(clickScreenPointVector3.x, clickScreenPointVector3.y);
-            addChess.AddChessPoint(clickScreenPointVector2);
+            var addChessPoint= _addChess.AddChessPoint(clickScreenPointVector2);
+            if (addChessPoint == null)
+            {
+                return;
+            }
+            //加个添加棋子对象函数()
+            addChessPrefab((Vector2) addChessPoint);
+            var WinOrLoss = _addChess.WinCheck((int) addChessPoint.Value.x, (int) addChessPoint.Value.y);
+            if (WinOrLoss)
+            {
+                Win();
+            }
+        }
+
+        /// <summary>
+        /// 添加棋子预制
+        /// </summary>
+        private void addChessPrefab(Vector2 chess)
+        {
+            Debug.Log(chess.x+":::"+chess.y);
+        }
+    
+        /// <summary>
+        /// 胜利的动作
+        /// </summary>
+        private void Win()
+        {
+            Debug.Log("win");
         }
         
-
     }
 }

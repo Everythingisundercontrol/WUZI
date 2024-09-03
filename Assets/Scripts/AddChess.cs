@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AddChess
@@ -29,9 +27,9 @@ public class AddChess
     /// </summary>
     private static int[,] InitChessPositions(int[,] inputInts)
     {
-        for (var i = 0; i < inputInts.Length; i++)
+        for (var i = 0; i < inputInts.GetLength(0); i++)
         {
-            for (var j = 0; j < inputInts.Length; j++)
+            for (var j = 0; j < inputInts.GetLength(1); j++)
             {
                 inputInts[i, j] = -1;
             }
@@ -41,37 +39,25 @@ public class AddChess
     }
     
     /// <summary>
-    /// 添加棋子，然后检测是否胜利
+    /// 数据中添加棋子
     /// </summary>
     /// <param name="inputVector2"></param>
-    public void AddChessPoint(Vector2 inputVector2)
+    public Vector2? AddChessPoint(Vector2 inputVector2)
     {
         if (inputVector2.x > _boardLength || inputVector2.x < -_boardLength || inputVector2.y > _boardLength ||
             inputVector2.y < -_boardLength)
         {
-            return;
+            return null;
         }
         var nearestChessPoint = NearestChessPoint(inputVector2);
         var x = (int) nearestChessPoint.x + _boardHalfRows;
         var y = (int) nearestChessPoint.y + _boardHalfRows;
         if (_chessPositions[x, y] !=-1)
         {
-            return;
+            return null;
         }
-
         _chessPositions[x, y] = _stepCount % 2;
-        
-        //加个添加棋子对象函数()
-
-        WinCheck(x, y);
-    }
-
-    /// <summary>
-    /// 胜利的动作
-    /// </summary>
-    private void Win()
-    {
-        Debug.Log("win");
+        return nearestChessPoint;
     }
 
     /// <summary>
@@ -93,38 +79,36 @@ public class AddChess
     /// <summary>
     /// 检测是否胜利
     /// </summary>
-    private void WinCheck(int x, int y)
+    public bool WinCheck(int x, int y)
     {
         Horizontal(x, y);
         if (_continuousCount >= 4)
         {
-            Win();
-            return;
+            return true;
         }
         _continuousCount = 0;
         
         Vertical(x, y);
         if (_continuousCount >= 4)
         {
-            Win();
-            return;
+            return true;
         }
         _continuousCount = 0;
         
         Diagonal(x, y);
         if (_continuousCount >= 4)
         {
-            Win();
-            return;
+            return true;
         }
         _continuousCount = 0;
         
         Antidiagonal(x, y);
         if (_continuousCount >= 4)
         {
-            Win();
+            return true;
         }
         _continuousCount = 0;
+        return false;
     }
 
     /// <summary>
