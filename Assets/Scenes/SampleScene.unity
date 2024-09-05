@@ -145,7 +145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 484258326}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.908, y: -6.915, z: -32.485275}
+  m_LocalPosition: {x: -7, y: -7, z: -32.485275}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -258,7 +258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1850364748}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.908, y: 6.915, z: -32.485275}
+  m_LocalPosition: {x: 7, y: 7, z: -32.485275}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -291,7 +291,7 @@ Transform:
   m_GameObject: {fileID: 1851945172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.82, y: 2.82, z: 1}
+  m_LocalScale: {x: 2.86, y: 2.86, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -310,10 +310,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   black: {fileID: 7640834362460206035, guid: ab91499fbe48f004390f80bb0f6a9157, type: 3}
   white: {fileID: 3818742870200598256, guid: 6c261ec038ccf6e4f9a2b91d94bbd97c, type: 3}
-  boardPositions1: {fileID: 484258326}
-  boardPositions2: {fileID: 1850364748}
-  vectorBoardPositions1: {x: 0, y: 0}
-  vectorBoardPositions2: {x: 0, y: 0}
+  boardTopRight: {fileID: 1850364748}
+  boardBottomLeft: {fileID: 484258326}
+  vectorBoardTopRight: {x: 0, y: 0}
+  vectorBoardBottomLeft: {x: 0, y: 0}
 --- !u!212 &1851945175
 SpriteRenderer:
   m_ObjectHideFlags: 0
