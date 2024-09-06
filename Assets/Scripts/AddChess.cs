@@ -2,44 +2,56 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// public enum ChessType
-// {
-//     None,
-//     White,
-//     Black,
-// }
+//功能：
+//平局
+//对局结束后的处理
+//胜利显示，显示谁胜利
+//重新开始
+
+//细节：
+//public和private的字段命名
+//字段的含义nFloor,position1
+//代码复用
+//函数拆分
+//public private声明的func的上下文顺序
+
+//oop
+//魔数,枚举enum定义chessType
+
+public enum ChessType
+{
+    None,
+    White,
+    Black,
+}
 
 public class AddChess
 {
-    //功能：
-    //平局
-    //对局结束后的处理
-    //胜利显示，显示谁胜利
-    //重新开始
+    private class Chess
+    {
+        public ChessType chessType;
+        public int stepIndex;
+    }
 
-    //细节：
-    //public和private的字段命名
-    //字段的含义nFloor,position1
-    //代码复用
-    //函数拆分
-    //public private声明的func的上下文顺序
+    public class Board
+    {
+        public readonly int BoardHalfRows; //棋盘一个象限内行列数
+        public readonly float BoardCellLengthX; //棋盘格子X边长
+        public readonly float BoardCellLengthY; //棋盘格子X边长
+        public readonly int BoardRows; //棋盘总行列数
 
-    //oop
-    //魔数,枚举enum定义chessType
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public Board(int boardRows, float boardLengthX, float boardLengthY)
+        {
+            BoardRows = boardRows;
+            BoardHalfRows = (BoardRows - 1) / 2;
+            BoardCellLengthX = (float) (Math.Round(boardLengthX) / (BoardRows - 1));
+            BoardCellLengthY = (float) (Math.Round(boardLengthY) / (BoardRows - 1));
+        }
+    }
 
-
-    public int StepCount; //第几步，用以判断当前是下的白棋还是黑棋
-    public readonly int BoardHalfRows; //棋盘一个象限内行列数
-    public readonly float BoardCellLengthX; //棋盘格子X边长
-    public readonly float BoardCellLengthY; //棋盘格子X边长
-
-
-    // private class Chess
-    // {
-    //     public ChessType chessType;
-    //     public int stepIndex;
-    // }
-    //
 
     //
     // public void OnInit()
@@ -55,12 +67,12 @@ public class AddChess
     //         }
     //     }
     // }
+    public readonly Board Borad;
+    public int StepCount; //第几步，用以判断当前是下的白棋还是黑棋
 
-
-    private int[,] _chessPositions; //二维棋盘位置，索引指位置，值指无(-1)，黑(0)，白(1)
-    private readonly int _boardRows; //棋盘总行列数
-    // private int _continuousCount; //该点的某一轴上连续的棋子数
+    private Chess[,] _chessPositions; //二维棋盘位置，索引指位置，值指无(-1)，黑(0)，白(1)
     private bool _exitLoop; //用以判断是否需要退出for循环
+
 
     /// <summary>
     /// 构造函数，初始化
@@ -70,19 +82,18 @@ public class AddChess
     public AddChess(Vector2 inputVector, Vector2 inputVector1)
     {
         _exitLoop = false;
-        var x = Math.Abs(inputVector.x - inputVector1.x);
-        var y = Math.Abs(inputVector.y - inputVector1.y);
-        _boardRows = 15;
-        BoardHalfRows = (_boardRows - 1) / 2;
-        _chessPositions = InitChessPositions(new int[_boardRows, _boardRows]);
-        BoardCellLengthX = (float) (Math.Round(x) / (_boardRows - 1));
-        BoardCellLengthY = (float) (Math.Round(y) / (_boardRows - 1));
+        var boardLengthX = Math.Abs(inputVector.x - inputVector1.x);
+        var boardLengthY = Math.Abs(inputVector.y - inputVector1.y);
+        Borad = new Board(15, boardLengthX, boardLengthY);
+        _chessPositions = InitChessPositions(new Chess[Borad.BoardRows, Borad.BoardRows]);
     }
 
     /// <summary>
     /// 数据中添加棋子
     /// </summary>
     /// <param name="inputVector2"></param>
+    /// <param name="position1"></param>
+    /// <param name="position2"></param>
     public Vector2 AddChessPoint(Vector2 inputVector2, Vector2 position1, Vector2 position2)
     {
         if (inputVector2.x < position1.x - 0.5 || inputVector2.x > position2.x + 0.5 ||
@@ -92,16 +103,17 @@ public class AddChess
             return new Vector2(-1, -1);
         }
 
-        inputVector2.x += BoardHalfRows;
-        inputVector2.y += BoardHalfRows;
+        inputVector2.x += Borad.BoardHalfRows;
+        inputVector2.y += Borad.BoardHalfRows;
 
         var nearestChessPoint = NearestChessPoint(inputVector2);
-        if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y] != -1)
+        if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType != ChessType.None)
         {
             return new Vector2(-1, -1);
         }
 
-        _chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y] = StepCount % 2;
+        _chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType =
+            StepCount % 2 == 0 ? ChessType.Black : ChessType.White;
         return nearestChessPoint;
     }
 
@@ -116,13 +128,13 @@ public class AddChess
     /// <summary>
     /// 初始化设置棋盘点位值为-1
     /// </summary>
-    private static int[,] InitChessPositions(int[,] inputInts)
+    private static Chess[,] InitChessPositions(Chess[,] inputInts)
     {
         for (var i = 0; i < inputInts.GetLength(0); i++)
         {
             for (var j = 0; j < inputInts.GetLength(1); j++)
             {
-                inputInts[i, j] = -1;
+                inputInts[i, j].chessType = ChessType.None;
             }
         }
 
@@ -144,7 +156,7 @@ public class AddChess
     /// </summary>
     private int CalculateContinuousCount(int x, int y)
     {
-        if (_chessPositions[x, y] == StepCount % 2)
+        if (_chessPositions[x, y].chessType == (StepCount % 2 == 0 ? ChessType.Black : ChessType.White))
         {
             return 1;
         }
@@ -160,7 +172,7 @@ public class AddChess
     {
         var continuousCount = 0;
         //右方判断
-        for (var i = x + 1; i < _boardRows; i++)
+        for (var i = x + 1; i < Borad.BoardRows; i++)
         {
             continuousCount += CalculateContinuousCount(i, y);
             if (!_exitLoop)
@@ -195,7 +207,7 @@ public class AddChess
     {
         var continuousCount = 0;
         //上方判断
-        for (var i = y + 1; i < _boardRows; i++)
+        for (var i = y + 1; i < Borad.BoardRows; i++)
         {
             continuousCount += CalculateContinuousCount(x, i);
             if (!_exitLoop)
@@ -230,13 +242,13 @@ public class AddChess
     {
         var continuousCount = 0;
         //左上方判断
-        if (x != 0 && y != _boardRows - 1)
+        if (x != 0 && y != Borad.BoardRows - 1)
         {
             continuousCount += DiagonalUpCheck(x, y);
         }
 
         //右下方判断
-        if (x == _boardRows - 1 || y == 0)
+        if (x == Borad.BoardRows - 1 || y == 0)
         {
             return WinCheckResult(continuousCount);
         }
@@ -255,7 +267,7 @@ public class AddChess
     private int DiagonalUpCheck(int x, int y)
     {
         var continuousCount = 0;
-        for (var i = 1; i <= x && i <= _boardRows - 1 - y; i++)
+        for (var i = 1; i <= x && i <= Borad.BoardRows - 1 - y; i++)
         {
             continuousCount += CalculateContinuousCount(x - i, y + i);
             if (!_exitLoop)
@@ -279,7 +291,7 @@ public class AddChess
     private int DiagonalDownCheck(int x, int y)
     {
         var continuousCount = 0;
-        for (var i = 1; i <= _boardRows - 1 - x && i <= y; i++)
+        for (var i = 1; i <= Borad.BoardRows - 1 - x && i <= y; i++)
         {
             continuousCount += CalculateContinuousCount(x + i, y - i);
             if (!_exitLoop)
@@ -301,7 +313,7 @@ public class AddChess
     {
         var continuousCount = 0;
         //右上方判断
-        if (x != _boardRows - 1 && y != _boardRows - 1)
+        if (x != Borad.BoardRows - 1 && y != Borad.BoardRows - 1)
         {
             continuousCount += AntidiagonalUpCheck(x, y);
         }
@@ -326,7 +338,7 @@ public class AddChess
     {
         var continuousCount = 0;
 
-        for (var i = 1; i <= _boardRows - 1 - x && i <= _boardRows - 1 - y; i++)
+        for (var i = 1; i <= Borad.BoardRows - 1 - x && i <= Borad.BoardRows - 1 - y; i++)
         {
             continuousCount += CalculateContinuousCount(x + i, y + i);
             if (!_exitLoop)
@@ -388,12 +400,12 @@ public class AddChess
         {
             case 0:
             {
-                boardCellLength = BoardCellLengthX;
+                boardCellLength = Borad.BoardCellLengthX;
                 break;
             }
             case 1:
             {
-                boardCellLength = BoardCellLengthY;
+                boardCellLength = Borad.BoardCellLengthY;
                 break;
             }
         }

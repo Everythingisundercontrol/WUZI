@@ -14,7 +14,6 @@ namespace DefaultNamespace
         
         public GameObject gameOverPanel;
         public Text winnerText;
-        public Button RestartButton;
 
         public Vector2 vectorBoardTopRight;
         public Vector2 vectorBoardBottomLeft;
@@ -116,16 +115,16 @@ namespace DefaultNamespace
             if (_addChess.StepCount % 2 == 0)
             {
                 Instantiate(black,
-                    new Vector3((float) ((chess.x - _addChess.BoardHalfRows) * _addChess.BoardCellLengthX),
-                        (float) ((chess.y - _addChess.BoardHalfRows) * _addChess.BoardCellLengthY), 1),
+                    new Vector3((float) ((chess.x - _addChess.Borad.BoardHalfRows) * _addChess.Borad.BoardCellLengthX),
+                        (float) ((chess.y - _addChess.Borad.BoardHalfRows) * _addChess.Borad.BoardCellLengthY), 1),
                     Quaternion.identity);
             }
 
             if (_addChess.StepCount % 2 == 1)
             {
                 Instantiate(white,
-                    new Vector3((float) ((chess.x - _addChess.BoardHalfRows) * _addChess.BoardCellLengthX),
-                        (float) ((chess.y - _addChess.BoardHalfRows) * _addChess.BoardCellLengthY), 1),
+                    new Vector3((float) ((chess.x - _addChess.Borad.BoardHalfRows) * _addChess.Borad.BoardCellLengthX),
+                        (float) ((chess.y - _addChess.Borad.BoardHalfRows) * _addChess.Borad.BoardCellLengthY), 1),
                     Quaternion.identity);
             }
         }
