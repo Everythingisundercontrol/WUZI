@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &113278580
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -722,7 +722,6 @@ MonoBehaviour:
   boardBottomLeft: {fileID: 484258326}
   gameOverPanel: {fileID: 113278579}
   winnerText: {fileID: 142963528}
-  RestartButton: {fileID: 902420660}
   vectorBoardTopRight: {x: 0, y: 0}
   vectorBoardBottomLeft: {x: 0, y: 0}
 --- !u!212 &1851945175

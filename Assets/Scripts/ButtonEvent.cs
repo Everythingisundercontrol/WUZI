@@ -10,6 +10,17 @@ public class ButtonEvent : MonoBehaviour
     {
         var restartButton = GameObject.Find("RestartButton").GetComponent<Button>();
         restartButton.onClick.AddListener(RestartGame);
+        
+        var retractButton = GameObject.Find("RetractButton").GetComponent<Button>();
+        retractButton.onClick.AddListener(Retract);
+    }
+
+    /// <summary>
+    /// 悔棋
+    /// </summary>
+    private void Retract()
+    {
+        
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ public class AddChess
 
     public class Board
     {
-        public readonly int BoardHalfRows; //棋盘一个象限内行列数
+        // public readonly int BoardHalfRows; //棋盘一个象限内行列数
         public readonly float BoardCellLengthX; //棋盘格子X边长
         public readonly float BoardCellLengthY; //棋盘格子X边长
         public readonly int BoardRows; //棋盘总行列数
@@ -46,29 +46,16 @@ public class AddChess
         public Board(int boardRows, float boardLengthX, float boardLengthY)
         {
             BoardRows = boardRows;
-            BoardHalfRows = (BoardRows - 1) / 2;
+            // BoardHalfRows = (BoardRows - 1) / 2;
             BoardCellLengthX = (float) (Math.Round(boardLengthX) / (BoardRows - 1));
             BoardCellLengthY = (float) (Math.Round(boardLengthY) / (BoardRows - 1));
         }
     }
 
-
-    //
-    // public void OnInit()
-    // {
-    //     _chessPositions = new Chess[15, 15];
-    //     for (var x = 0; x < 15; x++)
-    //     {
-    //         for (var y = 0; y < 15; y++)
-    //         {
-    //             var chess = new Chess();
-    //             chess.chessType = ChessType.None;
-    //             //…………属性初始化
-    //         }
-    //     }
-    // }
+    
     public readonly Board Borad;
     public int StepCount; //第几步，用以判断当前是下的白棋还是黑棋
+    public List<Vector2> ChessHistory;
 
     private Chess[,] _chessPositions; //二维棋盘位置，索引指位置，值指无(-1)，黑(0)，白(1)
     private bool _exitLoop; //用以判断是否需要退出for循环
@@ -81,6 +68,7 @@ public class AddChess
     /// <param name="inputVector1"></param>
     public AddChess(Vector2 inputVector, Vector2 inputVector1)
     {
+        ChessHistory = new List<Vector2>();
         _exitLoop = false;
         var boardLengthX = Math.Abs(inputVector.x - inputVector1.x);
         var boardLengthY = Math.Abs(inputVector.y - inputVector1.y);
@@ -89,24 +77,36 @@ public class AddChess
     }
 
     /// <summary>
+    /// 删除棋子
+    /// </summary>
+    public void DeleteChess()
+    {
+        if (ChessHistory.Count==0)
+        {
+            return;
+        }
+        var x = ChessHistory[ChessHistory.Count - 1].x;
+        var y = ChessHistory[ChessHistory.Count - 1].y;
+        _chessPositions[(int) x, (int) y].chessType = ChessType.None;
+        ChessHistory.RemoveAt(ChessHistory.Count - 1);
+    }
+
+    /// <summary>
     /// 数据中添加棋子
     /// </summary>
     /// <param name="inputVector2"></param>
     /// <param name="position1"></param>
     /// <param name="position2"></param>
-    public Vector2 AddChessPoint(Vector2 inputVector2, Vector2 position1, Vector2 position2)
+    public Vector2 AddChessPoint(Vector2 inputVector2, Vector2 vectorBoardBottomLeft, Vector2 vectorBoardTopRight)
     {
-        if (inputVector2.x < position1.x - 0.5 || inputVector2.x > position2.x + 0.5 ||
-            inputVector2.y < position1.y - 0.5 ||
-            inputVector2.y > position2.y + 0.5)
+        if (inputVector2.x < vectorBoardBottomLeft.x - 0.1 || inputVector2.x > vectorBoardTopRight.x + 0.1 ||
+            inputVector2.y < vectorBoardBottomLeft.y - 0.1 ||
+            inputVector2.y > vectorBoardTopRight.y + 0.1)
         {
             return new Vector2(-1, -1);
         }
 
-        inputVector2.x += Borad.BoardHalfRows;
-        inputVector2.y += Borad.BoardHalfRows;
-
-        var nearestChessPoint = NearestChessPoint(inputVector2);
+        var nearestChessPoint = NearestChessPoint(inputVector2, vectorBoardBottomLeft);
         if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType != ChessType.None)
         {
             return new Vector2(-1, -1);
@@ -134,7 +134,7 @@ public class AddChess
         {
             for (var j = 0; j < inputInts.GetLength(1); j++)
             {
-                inputInts[i, j].chessType = ChessType.None;
+                inputInts[i, j] = new Chess {chessType = ChessType.None};
             }
         }
 
@@ -383,9 +383,10 @@ public class AddChess
     /// </summary>
     /// <param name="inputVector2"></param>
     /// <returns></returns>
-    private Vector2 NearestChessPoint(Vector2 inputVector2)
+    private Vector2 NearestChessPoint(Vector2 inputVector2, Vector2 vectorBoardBottomLeft)
     {
-        return new Vector2(FindClosestMultiple(inputVector2.x, 0), FindClosestMultiple(inputVector2.y, 1));
+        return new Vector2(FindClosestMultiple(inputVector2.x, 0, vectorBoardBottomLeft),
+            FindClosestMultiple(inputVector2.y, 1, vectorBoardBottomLeft));
     }
 
     /// <summary>
@@ -393,29 +394,32 @@ public class AddChess
     /// </summary>
     /// <param name="x"></param>
     /// <returns></returns>
-    private int FindClosestMultiple(float x, int k)
+    private int FindClosestMultiple(float x, int k, Vector2 vectorBoardBottomLeft)
     {
         float boardCellLength = 0;
+        double bottomLeft = 0;
         switch (k)
         {
             case 0:
             {
                 boardCellLength = Borad.BoardCellLengthX;
+                bottomLeft = vectorBoardBottomLeft.x;
                 break;
             }
             case 1:
             {
                 boardCellLength = Borad.BoardCellLengthY;
+                bottomLeft = vectorBoardBottomLeft.y;
                 break;
             }
         }
 
-        var floorIndex = Math.Floor(x / boardCellLength);
-        var ceilIndex = Math.Ceiling(x / boardCellLength);
 
-        var distance2Floor = Math.Abs(boardCellLength * floorIndex - x);
-        var distance2Ceil = Math.Abs(boardCellLength * ceilIndex - x);
+        var floorIndex = Math.Floor((x - bottomLeft) / boardCellLength);
+        var ceilIndex = Math.Ceiling((x - bottomLeft) / boardCellLength);
 
+        var distance2Floor = Math.Abs(boardCellLength * floorIndex - (x - bottomLeft));
+        var distance2Ceil = Math.Abs(boardCellLength * ceilIndex - (x - bottomLeft));
         return distance2Floor <= distance2Ceil ? (int) floorIndex : (int) ceilIndex;
     }
 }
