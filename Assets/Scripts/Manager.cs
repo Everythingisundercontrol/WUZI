@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using DefaultNamespace.FSM;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +8,9 @@ namespace DefaultNamespace
 {
     public class Manager : MonoBehaviour
     {
-        public GameObject black;
-        public GameObject white;
+        public GameObject chess;
+        public Sprite black;
+        public Sprite white;
 
         public GameObject boardTopRight;
         public GameObject boardBottomLeft;
@@ -26,10 +29,12 @@ namespace DefaultNamespace
 
         private List<GameObject> _prefabHistory;
 
+        private List<GameObject> _chessPrefabPool;
+
         private static Manager _manager;
 
         /// <summary>
-        /// 右键悔棋,按钮还没做好，暂时先用右键去悔棋
+        /// 左键悔棋
         /// </summary>
         public void LeftMouseRetract()
         {
@@ -39,7 +44,8 @@ namespace DefaultNamespace
             }
 
             _addChess.DeleteChess();
-            Destroy(_prefabHistory[_prefabHistory.Count - 1]);
+            // Destroy(_prefabHistory[_prefabHistory.Count - 1]);
+            ReturnChessPrefab(_prefabHistory[_prefabHistory.Count - 1]);
             _prefabHistory.RemoveAt(_prefabHistory.Count - 1);
         }
 
@@ -65,12 +71,12 @@ namespace DefaultNamespace
             }
 
             _addChess.ChessHistory.Add(addChessPoint);
-            addChessPrefab((Vector2) addChessPoint);
+            addChessPrefab(addChessPoint);
             EndCheck(addChessPoint);
 
             _addChess.StepCount++;
         }
-        
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -91,12 +97,14 @@ namespace DefaultNamespace
             _baseFsm = new BaseFSM();
             var dictionary = new Dictionary<FsmStateEnum, FsmState>
             {
-                {FsmStateEnum.Play, new Play()}, {FsmStateEnum.Retract, new Retract()}
+                {FsmStateEnum.Play, new PlayState()},
+                {FsmStateEnum.Retract, new RetractState()}
             };
             _baseFsm.SetFsm(dictionary);
             _baseFsm.ChangeFsmState(FsmStateEnum.Play);
 
             _prefabHistory = new List<GameObject>();
+            _chessPrefabPool = new List<GameObject>();
 
             if (_manager == null)
             {
@@ -115,11 +123,42 @@ namespace DefaultNamespace
                 return;
             }
 
-            // MouseInputCheck();
-            
             _baseFsm.OnUpdate(_manager);
         }
 
+        private GameObject GetChessPrefab(Vector3 ChessPosition, Sprite sprite)
+        {
+            foreach (var chess in _chessPrefabPool.Where(chess => !chess.activeInHierarchy))
+            {
+                chess.SetActive(true);
+                chess.transform.position = ChessPosition;
+                var spriteRenderer = chess.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.sprite = sprite;
+                }
+
+                return chess;
+            }
+
+            return CreateChessPrefab(ChessPosition, sprite);
+        }
+
+        private GameObject CreateChessPrefab(Vector3 ChessPosition, Sprite sprite)
+        {
+            var newChessPrefab = Instantiate(chess, ChessPosition, Quaternion.identity);
+            newChessPrefab.GetComponent<SpriteRenderer>().sprite = sprite;
+            _chessPrefabPool.Add(newChessPrefab);
+            return newChessPrefab;
+        }
+
+        private void ReturnChessPrefab(GameObject gameObject)
+        {
+            if (_chessPrefabPool.Contains(gameObject))
+            {
+                gameObject.SetActive(false);
+            }
+        }
 
         // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
@@ -136,8 +175,8 @@ namespace DefaultNamespace
             {
                 _baseFsm.ChangeFsmState(FsmStateEnum.Retract);
             }
-            
-            
+
+
             if (!Input.GetKeyDown(KeyCode.Escape))
             {
                 return;
@@ -160,7 +199,6 @@ namespace DefaultNamespace
         {
             if (Input.GetMouseButtonDown(0))
             {
-                // LeftMousePlay();
                 _baseFsm.ChangeFsmState(FsmStateEnum.Play);
             }
 
@@ -168,8 +206,8 @@ namespace DefaultNamespace
             {
                 return;
             }
+
             _baseFsm.ChangeFsmState(FsmStateEnum.Retract);
-            // LeftMouseRetract();
         }
 
         private void EndCheck(Vector2 addChessPoint)
@@ -192,21 +230,26 @@ namespace DefaultNamespace
         /// </summary>
         private void addChessPrefab(Vector2 chess)
         {
+            var Position = new Vector3(vectorBoardBottomLeft.x + chess.x * _addChess.Borad.BoardCellLengthX,
+                vectorBoardBottomLeft.y + chess.y * _addChess.Borad.BoardCellLengthY, 1);
+            
             if (_addChess.StepCount % 2 == 0)
             {
-                _prefabHistory.Add(Instantiate(black,
-                    new Vector3(vectorBoardBottomLeft.x + chess.x * _addChess.Borad.BoardCellLengthX,
-                        vectorBoardBottomLeft.y + chess.y * _addChess.Borad.BoardCellLengthY, 1),
-                    Quaternion.identity)
-                );
+                // _prefabHistory.Add(Instantiate(black,
+                //     new Vector3(vectorBoardBottomLeft.x + chess.x * _addChess.Borad.BoardCellLengthX,
+                //         vectorBoardBottomLeft.y + chess.y * _addChess.Borad.BoardCellLengthY, 1),
+                //     Quaternion.identity)
+                // );
+                _prefabHistory.Add(GetChessPrefab(Position,black));
             }
 
             if (_addChess.StepCount % 2 == 1)
             {
-                _prefabHistory.Add(Instantiate(white,
-                    new Vector3(vectorBoardBottomLeft.x + chess.x * _addChess.Borad.BoardCellLengthX,
-                        vectorBoardBottomLeft.y + chess.y * _addChess.Borad.BoardCellLengthY, 1),
-                    Quaternion.identity));
+                // _prefabHistory.Add(Instantiate(white,
+                //     new Vector3(vectorBoardBottomLeft.x + chess.x * _addChess.Borad.BoardCellLengthX,
+                //         vectorBoardBottomLeft.y + chess.y * _addChess.Borad.BoardCellLengthY, 1),
+                //     Quaternion.identity));
+                _prefabHistory.Add(GetChessPrefab(Position,white));
             }
         }
 

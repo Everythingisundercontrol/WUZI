@@ -11,8 +11,8 @@ public class ButtonEvent : MonoBehaviour
         var restartButton = GameObject.Find("RestartButton").GetComponent<Button>();
         restartButton.onClick.AddListener(RestartGame);
         
-        var retractButton = GameObject.Find("RetractButton").GetComponent<Button>();
-        retractButton.onClick.AddListener(Retract);
+        // var retractButton = GameObject.Find("RetractButton").GetComponent<Button>();
+        // retractButton.onClick.AddListener(Retract);
     }
 
     /// <summary>
@@ -29,13 +29,5 @@ public class ButtonEvent : MonoBehaviour
     private static void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // 重新加载当前场景
-    }
-    
-    /// <summary>
-    /// 退出游戏
-    /// </summary>
-    public void QuitGame()
-    {
-        Application.Quit(); // 退出游戏
     }
 }

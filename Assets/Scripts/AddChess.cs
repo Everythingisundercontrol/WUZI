@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 
 //功能：
@@ -18,41 +19,8 @@ using UnityEngine;
 //oop
 //魔数,枚举enum定义chessType
 
-public enum ChessType
-{
-    None,
-    White,
-    Black,
-}
-
 public class AddChess
 {
-    private class Chess
-    {
-        public ChessType chessType;
-        public int stepIndex;
-    }
-
-    public class Board
-    {
-        // public readonly int BoardHalfRows; //棋盘一个象限内行列数
-        public readonly float BoardCellLengthX; //棋盘格子X边长
-        public readonly float BoardCellLengthY; //棋盘格子X边长
-        public readonly int BoardRows; //棋盘总行列数
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public Board(int boardRows, float boardLengthX, float boardLengthY)
-        {
-            BoardRows = boardRows;
-            // BoardHalfRows = (BoardRows - 1) / 2;
-            BoardCellLengthX = (float) (Math.Round(boardLengthX) / (BoardRows - 1));
-            BoardCellLengthY = (float) (Math.Round(boardLengthY) / (BoardRows - 1));
-        }
-    }
-
-    
     public readonly Board Borad;
     public int StepCount; //第几步，用以判断当前是下的白棋还是黑棋
     public List<Vector2> ChessHistory;
@@ -87,7 +55,7 @@ public class AddChess
         }
         var x = ChessHistory[ChessHistory.Count - 1].x;
         var y = ChessHistory[ChessHistory.Count - 1].y;
-        _chessPositions[(int) x, (int) y].chessType = ChessType.None;
+        _chessPositions[(int) x, (int) y].chessType = ChessTypeEnum.None;
         ChessHistory.RemoveAt(ChessHistory.Count - 1);
     }
 
@@ -107,13 +75,13 @@ public class AddChess
         }
 
         var nearestChessPoint = NearestChessPoint(inputVector2, vectorBoardBottomLeft);
-        if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType != ChessType.None)
+        if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType != ChessTypeEnum.None)
         {
             return new Vector2(-1, -1);
         }
 
         _chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType =
-            StepCount % 2 == 0 ? ChessType.Black : ChessType.White;
+            StepCount % 2 == 0 ? ChessTypeEnum.Black : ChessTypeEnum.White;
         return nearestChessPoint;
     }
 
@@ -125,6 +93,8 @@ public class AddChess
         return Horizontal(x, y) || Vertical(x, y) || Diagonal(x, y) || Antidiagonal(x, y);
     }
 
+    
+    
     /// <summary>
     /// 初始化设置棋盘点位值为-1
     /// </summary>
@@ -134,7 +104,7 @@ public class AddChess
         {
             for (var j = 0; j < inputInts.GetLength(1); j++)
             {
-                inputInts[i, j] = new Chess {chessType = ChessType.None};
+                inputInts[i, j] = new Chess {chessType = ChessTypeEnum.None};
             }
         }
 
@@ -156,7 +126,7 @@ public class AddChess
     /// </summary>
     private int CalculateContinuousCount(int x, int y)
     {
-        if (_chessPositions[x, y].chessType == (StepCount % 2 == 0 ? ChessType.Black : ChessType.White))
+        if (_chessPositions[x, y].chessType == (StepCount % 2 == 0 ? ChessTypeEnum.Black : ChessTypeEnum.White))
         {
             return 1;
         }

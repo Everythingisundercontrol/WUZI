@@ -458,7 +458,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: -119}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &902420660
@@ -504,7 +504,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: 661638f8ce5f7b7429bba5b5e7175811, type: 3}
+      - m_Target: {fileID: 0}
         m_MethodName: 
         m_Mode: 1
         m_Arguments:
@@ -716,8 +716,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f45f8a060748e4a90182c53399b7dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  black: {fileID: 7640834362460206035, guid: ab91499fbe48f004390f80bb0f6a9157, type: 3}
-  white: {fileID: 3818742870200598256, guid: 6c261ec038ccf6e4f9a2b91d94bbd97c, type: 3}
+  chess: {fileID: 7640834362460206035, guid: 0173c5d4b2226c24e821a934a2cdea1f, type: 3}
+  black: {fileID: 21300000, guid: 49e3082f86808484f9d97219c973895e, type: 3}
+  white: {fileID: 21300000, guid: 9ea2023f4d0fe904d8d5d7c15cc0cead, type: 3}
   boardTopRight: {fileID: 1850364748}
   boardBottomLeft: {fileID: 484258326}
   gameOverPanel: {fileID: 113278579}

@@ -2,13 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using DefaultNamespace.FSM;
 using UnityEngine;
-
-public enum FsmStateEnum
-{
-    Play,
-    Retract,
-}
 
 public class BaseFSM
 {
