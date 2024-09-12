@@ -1,9 +1,6 @@
-﻿namespace DefaultNamespace
+﻿public enum ChessTypeEnum
 {
-    public enum ChessTypeEnum
-    {
-        None,
-        White,
-        Black,
-    }
+    None,
+    White,
+    Black,
 }

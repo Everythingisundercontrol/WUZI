@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using DefaultNamespace;
-using UnityEngine;
-
-public interface FsmState
+﻿public interface FsmState
 {
-    void OnEnter();
+    void OnEnter(Manager manager);
 
-    void OnUpdate(Manager manager);
+    void OnUpdate();
 
     void OnExit();
+
 }

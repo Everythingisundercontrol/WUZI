@@ -1,7 +1,3 @@
-﻿namespace DefaultNamespace
+﻿public interface ChessPrefab
 {
-    public interface ChessPrefab
-    {
-        
-    }
 }

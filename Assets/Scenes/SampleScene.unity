@@ -564,6 +564,101 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 661638f8ce5f7b7429bba5b5e7175811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1466888171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1466888173}
+  - component: {fileID: 1466888172}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1466888172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466888171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09ad2f31685cf9941ba9e6c1c5b61e63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1466888173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466888171}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 994.70636, y: 442.82965, z: -19.731956}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1614373325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1614373327}
+  - component: {fileID: 1614373326}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1614373326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614373325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38f45f8a060748e4a90182c53399b7dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chess: {fileID: 7640834362460206035, guid: 0173c5d4b2226c24e821a934a2cdea1f, type: 3}
+  black: {fileID: 21300000, guid: 49e3082f86808484f9d97219c973895e, type: 3}
+  white: {fileID: 21300000, guid: 9ea2023f4d0fe904d8d5d7c15cc0cead, type: 3}
+  boardTopRight: {fileID: 1850364748}
+  boardBottomLeft: {fileID: 484258326}
+  gameOverPanel: {fileID: 113278579}
+  winnerText: {fileID: 142963528}
+  vectorBoardTopRight: {x: 0, y: 0}
+  vectorBoardBottomLeft: {x: 0, y: 0}
+--- !u!4 &1614373327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614373325}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 994.70636, y: 442.82965, z: -19.731956}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1800521769
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,7 +777,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1851945173}
   - component: {fileID: 1851945175}
-  - component: {fileID: 1851945174}
   m_Layer: 8
   m_Name: board
   m_TagString: Untagged
@@ -704,27 +798,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1851945174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1851945172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38f45f8a060748e4a90182c53399b7dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chess: {fileID: 7640834362460206035, guid: 0173c5d4b2226c24e821a934a2cdea1f, type: 3}
-  black: {fileID: 21300000, guid: 49e3082f86808484f9d97219c973895e, type: 3}
-  white: {fileID: 21300000, guid: 9ea2023f4d0fe904d8d5d7c15cc0cead, type: 3}
-  boardTopRight: {fileID: 1850364748}
-  boardBottomLeft: {fileID: 484258326}
-  gameOverPanel: {fileID: 113278579}
-  winnerText: {fileID: 142963528}
-  vectorBoardTopRight: {x: 0, y: 0}
-  vectorBoardBottomLeft: {x: 0, y: 0}
 --- !u!212 &1851945175
 SpriteRenderer:
   m_ObjectHideFlags: 0

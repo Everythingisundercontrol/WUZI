@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefaultNamespace;
 using UnityEngine;
 
 //功能：
@@ -19,13 +18,13 @@ using UnityEngine;
 //oop
 //魔数,枚举enum定义chessType
 
-public class AddChess
+public class Model
 {
     public readonly Board Borad;
     public int StepCount; //第几步，用以判断当前是下的白棋还是黑棋
-    public List<Vector2> ChessHistory;
+    public readonly List<Vector2> ChessHistory;
 
-    private Chess[,] _chessPositions; //二维棋盘位置，索引指位置，值指无(-1)，黑(0)，白(1)
+    private readonly Chess[,] _chessList; //二维棋盘位置，索引指位置，值指无(-1)，黑(0)，白(1)
     private bool _exitLoop; //用以判断是否需要退出for循环
 
 
@@ -34,14 +33,14 @@ public class AddChess
     /// </summary>
     /// <param name="inputVector"></param>
     /// <param name="inputVector1"></param>
-    public AddChess(Vector2 inputVector, Vector2 inputVector1)
+    public Model(Vector2 inputVector, Vector2 inputVector1)
     {
         ChessHistory = new List<Vector2>();
         _exitLoop = false;
         var boardLengthX = Math.Abs(inputVector.x - inputVector1.x);
         var boardLengthY = Math.Abs(inputVector.y - inputVector1.y);
         Borad = new Board(15, boardLengthX, boardLengthY);
-        _chessPositions = InitChessPositions(new Chess[Borad.BoardRows, Borad.BoardRows]);
+        _chessList = InitChessPositions(new Chess[Borad.BoardRows, Borad.BoardRows]);
     }
 
     /// <summary>
@@ -49,38 +48,38 @@ public class AddChess
     /// </summary>
     public void DeleteChess()
     {
-        if (ChessHistory.Count==0)
+        if (ChessHistory.Count == 0)
         {
             return;
         }
         var x = ChessHistory[ChessHistory.Count - 1].x;
         var y = ChessHistory[ChessHistory.Count - 1].y;
-        _chessPositions[(int) x, (int) y].chessType = ChessTypeEnum.None;
+        _chessList[(int) x, (int) y].chessType = ChessTypeEnum.None;
         ChessHistory.RemoveAt(ChessHistory.Count - 1);
     }
 
     /// <summary>
     /// 数据中添加棋子
     /// </summary>
-    /// <param name="inputVector2"></param>
-    /// <param name="position1"></param>
-    /// <param name="position2"></param>
     public Vector2 AddChessPoint(Vector2 inputVector2, Vector2 vectorBoardBottomLeft, Vector2 vectorBoardTopRight)
     {
-        if (inputVector2.x < vectorBoardBottomLeft.x - 0.1 || inputVector2.x > vectorBoardTopRight.x + 0.1 ||
-            inputVector2.y < vectorBoardBottomLeft.y - 0.1 ||
-            inputVector2.y > vectorBoardTopRight.y + 0.1)
+  
+        var inputValid = inputVector2.x < vectorBoardBottomLeft.x - 0.1 || inputVector2.x > vectorBoardTopRight.x + 0.1 ||
+                   inputVector2.y < vectorBoardBottomLeft.y - 0.1 ||
+                   inputVector2.y > vectorBoardTopRight.y + 0.1;
+        if (inputValid)
         {
             return new Vector2(-1, -1);
         }
 
         var nearestChessPoint = NearestChessPoint(inputVector2, vectorBoardBottomLeft);
-        if (_chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType != ChessTypeEnum.None)
+        var chess = _chessList[(int) nearestChessPoint.x, (int) nearestChessPoint.y];
+        if (chess.chessType != ChessTypeEnum.None)
         {
             return new Vector2(-1, -1);
         }
 
-        _chessPositions[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType =
+        _chessList[(int) nearestChessPoint.x, (int) nearestChessPoint.y].chessType =
             StepCount % 2 == 0 ? ChessTypeEnum.Black : ChessTypeEnum.White;
         return nearestChessPoint;
     }
@@ -126,7 +125,7 @@ public class AddChess
     /// </summary>
     private int CalculateContinuousCount(int x, int y)
     {
-        if (_chessPositions[x, y].chessType == (StepCount % 2 == 0 ? ChessTypeEnum.Black : ChessTypeEnum.White))
+        if (_chessList[x, y].chessType == (StepCount % 2 == 0 ? ChessTypeEnum.Black : ChessTypeEnum.White))
         {
             return 1;
         }

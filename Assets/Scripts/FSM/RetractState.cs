@@ -1,24 +1,31 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-namespace DefaultNamespace.FSM
+
+public class RetractState : FsmState
 {
-    public class RetractState : FsmState
+    private Manager _manager;
+
+    public void OnEnter(Manager manager)
     {
-        public void OnEnter()
-        {
-            Debug.Log("Retract");
-        }
+        Debug.Log("Retract");
+        _manager = manager;
+        InstanceTest.AddListenerClickLeft(OnKeyboardClickLeft);
+    }
 
-        public void OnUpdate(Manager manager)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                manager.LeftMouseRetract();
-            }
-        }
+    public void OnUpdate()
+    {
+    }
 
-        public void OnExit()
+    public void OnExit()
+    {
+    }
+
+    private void OnKeyboardClickLeft()
+    {
+        if (!_manager.gameOverPanel.activeSelf)
         {
+            _manager.LeftMouseRetract();
         }
     }
 }

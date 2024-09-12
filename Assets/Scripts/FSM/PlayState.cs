@@ -1,26 +1,33 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-namespace DefaultNamespace.FSM
+
+public class PlayState : FsmState
 {
-    public class PlayState : FsmState
+    private Manager _manager;
+
+    public void OnEnter(Manager manager)
     {
-        public void OnEnter()
-        {
-            Debug.Log("Play");
-        }
+        Debug.Log("Play");
+        _manager = manager;
+        InstanceTest.AddListenerClickLeft(OnKeyboardClickLeft);
+    }
 
-        // ReSharper disable Unity.PerformanceAnalysis
-        public void OnUpdate(Manager manager)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                manager.LeftMousePlay();
-            }
-        }
+    // ReSharper disable Unity.PerformanceAnalysis
+    public void OnUpdate()
+    {
+    }
 
-        public void OnExit()
+    public void OnExit()
+    {
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    private void OnKeyboardClickLeft()
+    {
+        if (!_manager.gameOverPanel.activeSelf)
         {
+            _manager.LeftMousePlay();
         }
-    
     }
 }

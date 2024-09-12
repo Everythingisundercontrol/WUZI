@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using DefaultNamespace;
-using DefaultNamespace.FSM;
 using UnityEngine;
 
 public class BaseFSM
@@ -16,7 +14,7 @@ public class BaseFSM
         _fsmStateDic = states;
     }
     
-    public void ChangeFsmState(FsmStateEnum stateName)
+    public void ChangeFsmState(FsmStateEnum stateName,Manager manager)
     {
         if (!_fsmStateDic.ContainsKey(stateName))
         {
@@ -26,12 +24,12 @@ public class BaseFSM
         
         _curremtFsmState?.OnExit();
         _curremtFsmState = _fsmStateDic[stateName];
-        _curremtFsmState.OnEnter();
+        _curremtFsmState.OnEnter(manager);
     }
     
-    public void OnUpdate(Manager manager)
+    public void OnUpdate()
     {
-        _curremtFsmState?.OnUpdate(manager);
+        _curremtFsmState?.OnUpdate();
     }
     
 }

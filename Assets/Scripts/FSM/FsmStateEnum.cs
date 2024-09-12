@@ -1,8 +1,5 @@
-﻿namespace DefaultNamespace.FSM
+﻿public enum FsmStateEnum
 {
-    public enum FsmStateEnum
-    {
-        Play,
-        Retract,
-    }
+    Play,
+    Retract,
 }
