@@ -24,7 +24,7 @@ public class BaseFSM
         
         _curremtFsmState?.OnExit();
         _curremtFsmState = _fsmStateDic[stateName];
-        _curremtFsmState.OnEnter(manager);
+        _curremtFsmState.OnEnter();
     }
     
     public void OnUpdate()

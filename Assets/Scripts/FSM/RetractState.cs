@@ -6,10 +6,19 @@ public class RetractState : FsmState
 {
     private Manager _manager;
 
-    public void OnEnter(Manager manager)
+    public void OnInit(Manager manager)
     {
-        Debug.Log("Retract");
         _manager = manager;
+    }
+
+    public void OnEnter()
+    {
+        if (!_manager)
+        {
+            return;
+        }
+
+        Debug.Log("Retract");
         InstanceTest.AddListenerClickLeft(OnKeyboardClickLeft);
     }
 
@@ -19,11 +28,13 @@ public class RetractState : FsmState
 
     public void OnExit()
     {
+        InstanceTest.RemoveListenerClickLeft(OnKeyboardClickLeft);
+        Debug.Log("RetractState.OnExit");
     }
 
-    private void OnKeyboardClickLeft()
+    private void OnKeyboardClickLeft(Vector3 pos)
     {
-        if (!_manager.gameOverPanel.activeSelf)
+        if (!_manager.IfStop)
         {
             _manager.LeftMouseRetract();
         }

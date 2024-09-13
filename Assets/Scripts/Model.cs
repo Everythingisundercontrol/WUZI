@@ -52,6 +52,7 @@ public class Model
         {
             return;
         }
+
         var x = ChessHistory[ChessHistory.Count - 1].x;
         var y = ChessHistory[ChessHistory.Count - 1].y;
         _chessList[(int) x, (int) y].chessType = ChessTypeEnum.None;
@@ -63,11 +64,7 @@ public class Model
     /// </summary>
     public Vector2 AddChessPoint(Vector2 inputVector2, Vector2 vectorBoardBottomLeft, Vector2 vectorBoardTopRight)
     {
-  
-        var inputValid = inputVector2.x < vectorBoardBottomLeft.x - 0.1 || inputVector2.x > vectorBoardTopRight.x + 0.1 ||
-                   inputVector2.y < vectorBoardBottomLeft.y - 0.1 ||
-                   inputVector2.y > vectorBoardTopRight.y + 0.1;
-        if (inputValid)
+        if (InputValidCheck(inputVector2,vectorBoardBottomLeft,vectorBoardTopRight))
         {
             return new Vector2(-1, -1);
         }
@@ -92,8 +89,17 @@ public class Model
         return Horizontal(x, y) || Vertical(x, y) || Diagonal(x, y) || Antidiagonal(x, y);
     }
 
-    
-    
+    /// <summary>
+    /// 检测输入坐标是否合法
+    /// </summary>
+    private static bool InputValidCheck(Vector2 inputVector2, Vector2 vectorBoardBottomLeft, Vector2 vectorBoardTopRight)
+    {
+        return inputVector2.x < vectorBoardBottomLeft.x - 0.1 ||
+               inputVector2.x > vectorBoardTopRight.x + 0.1 ||
+               inputVector2.y < vectorBoardBottomLeft.y - 0.1 ||
+               inputVector2.y > vectorBoardTopRight.y + 0.1;
+    }
+
     /// <summary>
     /// 初始化设置棋盘点位值为-1
     /// </summary>

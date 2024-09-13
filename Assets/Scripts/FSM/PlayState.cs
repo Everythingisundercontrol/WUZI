@@ -6,10 +6,18 @@ public class PlayState : FsmState
 {
     private Manager _manager;
 
-    public void OnEnter(Manager manager)
+    public void OnInit(Manager manager)
     {
-        Debug.Log("Play");
         _manager = manager;
+    }
+
+    public void OnEnter()
+    {
+        if (!_manager)
+        {
+            return;
+        }
+        Debug.Log("Play");
         InstanceTest.AddListenerClickLeft(OnKeyboardClickLeft);
     }
 
@@ -20,14 +28,16 @@ public class PlayState : FsmState
 
     public void OnExit()
     {
+        InstanceTest.RemoveListenerClickLeft(OnKeyboardClickLeft);
+        Debug.Log("PlayState.OnExit");
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
-    private void OnKeyboardClickLeft()
+    private void OnKeyboardClickLeft(Vector3 mousePosition)
     {
-        if (!_manager.gameOverPanel.activeSelf)
+        if (!_manager.IfStop)
         {
-            _manager.LeftMousePlay();
+            _manager.LeftMousePlay(mousePosition);
         }
     }
 }

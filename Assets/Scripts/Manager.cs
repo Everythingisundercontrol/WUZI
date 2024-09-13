@@ -5,63 +5,37 @@ using UnityEngine.UI;
 
 public class Manager : MonoBehaviour
 {
-    public GameObject chess;
-    public Sprite black;
-    public Sprite white;
+    public bool IfStop;
 
     public GameObject boardTopRight;
     public GameObject boardBottomLeft;
 
-
-    public GameObject gameOverPanel;
-    public Text winnerText;
-
     public Vector2 vectorBoardTopRight;
     public Vector2 vectorBoardBottomLeft;
-
 
     private BaseFSM _baseFsm;
 
     private Model _model;
+    private View _view;
 
     private List<GameObject> _prefabHistory;
 
-    private List<GameObject> _chessPrefabPool;
-
     private static Manager _manager;
-
-    /// <summary>
-    /// 初始化
-    /// </summary>
+    
     private void Start()
     {
-        if (_manager == null)
-        {
-            _manager = this;
-        }
+        _manager = this;
 
-        gameOverPanel.SetActive(false); //游戏开始时不显示
+        IfStop = false;
 
         _prefabHistory = new List<GameObject>();
-        _chessPrefabPool = new List<GameObject>();
 
         InitListener();
         InitModel();
+        InitView();
         InitFsm();
     }
 
-    /// <summary>
-    /// 帧
-    /// </summary>
-    private void Update()
-    {
-        if (gameOverPanel.activeSelf)
-        {
-            return;
-        }
-
-        _baseFsm.OnUpdate();
-    }
 
     /// <summary>
     /// 左键悔棋
@@ -75,21 +49,21 @@ public class Manager : MonoBehaviour
 
         _model.DeleteChess();
         _model.StepCount--;
-        ReturnChessPrefab(_prefabHistory[_prefabHistory.Count - 1]);
+        _view.ReturnChessPrefab(_prefabHistory[_prefabHistory.Count - 1]);
         _prefabHistory.RemoveAt(_prefabHistory.Count - 1);
     }
 
     /// <summary>
     /// 左键下棋
     /// </summary>
-    public void LeftMousePlay()
+    public void LeftMousePlay(Vector3 mousePosition)
     {
         if (!Camera.main)
         {
             return;
         }
 
-        var clickScreenPointVector3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var clickScreenPointVector3 = Camera.main.ScreenToWorldPoint(mousePosition);
         var clickScreenPointVector2 = new Vector2(clickScreenPointVector3.x, clickScreenPointVector3.y);
 
         var addChessPoint =
@@ -101,7 +75,7 @@ public class Manager : MonoBehaviour
         }
 
         _model.ChessHistory.Add(addChessPoint);
-        AddChessPrefab(addChessPoint);
+        AddChess(addChessPoint);
         EndCheck(addChessPoint);
 
         _model.StepCount++;
@@ -133,15 +107,35 @@ public class Manager : MonoBehaviour
     }
 
     /// <summary>
+    /// 初始化view
+    /// </summary>
+    private void InitView()
+    {
+        _view = GameObject.Find("ViewManager").GetComponent<View>();
+        if (_view == null)
+        {
+            Debug.Log("View null");
+            return;
+        }
+
+        _view.ChessPrefabPool = new List<GameObject>();
+        _view.GameOverPanel.SetActive(false); //游戏开始时不显示
+    }
+
+    /// <summary>
     /// 初始化状态机
     /// </summary>
     private void InitFsm()
     {
         _baseFsm = new BaseFSM();
+        var playState = new PlayState();
+        var retractState = new RetractState();
+        playState.OnInit(this);
+        retractState.OnInit(this);
         var dictionary = new Dictionary<FsmStateEnum, FsmState>
         {
-            {FsmStateEnum.Play, new PlayState()},
-            {FsmStateEnum.Retract, new RetractState()}
+            {FsmStateEnum.Play, playState},
+            {FsmStateEnum.Retract, retractState}
         };
         _baseFsm.SetFsm(dictionary);
         _baseFsm.ChangeFsmState(FsmStateEnum.Play, _manager);
@@ -152,12 +146,15 @@ public class Manager : MonoBehaviour
     /// </summary>
     private void OnKeyboardEscDown()
     {
-        if (gameOverPanel.activeSelf)
+        if (_view.GameOverPanel.activeSelf)
         {
-            Continue();
+            _view.Continue();
+            IfStop = false;
             return;
         }
-        Stop();
+
+        _view.Stop();
+        IfStop = true;
     }
 
     /// <summary>
@@ -177,68 +174,7 @@ public class Manager : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// 从List中获取棋子
-    /// </summary>
-    /// <param name="chessPosition"></param>
-    /// <param name="sprite"></param>
-    /// <returns></returns>
-    private GameObject GetChess(Vector3 chessPosition, Sprite sprite)
-    {
-        foreach (var chessInPool in _chessPrefabPool)
-        {
-            if (chessInPool.activeInHierarchy)
-            {
-                continue;
-            }
 
-            chessInPool.SetActive(true);
-            return SetChessAttributes(chessInPool, chessPosition, sprite);
-        }
-
-        return CreateChess(chessPosition, sprite);
-    }
-
-    /// <summary>
-    /// 设置chess属性
-    /// </summary>
-    /// <param name="inputChess"></param>
-    /// <param name="chessPosition"></param>
-    /// <param name="sprite"></param>
-    /// <returns></returns>
-    private GameObject SetChessAttributes(GameObject inputChess, Vector3 chessPosition, Sprite sprite)
-    {
-        inputChess.transform.position = chessPosition;
-        var spriteRenderer = inputChess.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sprite = sprite;
-        }
-
-        return inputChess;
-    }
-
-    /// <summary>
-    /// 创建棋子
-    /// </summary>
-    private GameObject CreateChess(Vector3 chessPosition, Sprite sprite)
-    {
-        var newChessObj = SetChessAttributes(Instantiate(chess), chessPosition, sprite);
-        _chessPrefabPool.Add(newChessObj);
-        return newChessObj;
-    }
-
-    /// <summary>
-    /// 向List中归还棋子
-    /// </summary>
-    /// <param name="obj"></param>
-    private void ReturnChessPrefab(GameObject obj)
-    {
-        if (_chessPrefabPool.Contains(obj))
-        {
-            obj.SetActive(false);
-        }
-    }
 
     /// <summary>
     /// 结局检查
@@ -250,67 +186,31 @@ public class Manager : MonoBehaviour
 
         if (winOrLoss)
         {
-            Win();
+            _view.Win(_model.StepCount % 2 == 0);
         }
 
         if (_model.StepCount == 224)
         {
-            Draw();
+            _view.Draw();
         }
     }
 
     /// <summary>
-    /// 添加棋子预制
+    /// 添加棋子
     /// </summary>
-    private void AddChessPrefab(Vector2 chess)
+    private void AddChess(Vector2 chess)
     {
         var position = new Vector3(vectorBoardBottomLeft.x + chess.x * _model.Borad.BoardCellLengthX,
             vectorBoardBottomLeft.y + chess.y * _model.Borad.BoardCellLengthY, 1);
 
         if (_model.StepCount % 2 == 0)
         {
-            _prefabHistory.Add(GetChess(position, black));
+            _prefabHistory.Add(_view.GetChess(position, _view.black));
         }
 
         if (_model.StepCount % 2 == 1)
         {
-            _prefabHistory.Add(GetChess(position, white));
+            _prefabHistory.Add(_view.GetChess(position, _view.white));
         }
-    }
-
-
-    /// <summary>
-    /// 胜利的动作
-    /// </summary>
-    private void Win()
-    {
-        winnerText.text = (_model.StepCount % 2 == 0 ? "black" : "white") + " Wins!";
-        gameOverPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// 平局的动作
-    /// </summary>
-    private void Draw()
-    {
-        winnerText.text = "Draw";
-        gameOverPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// 暂停
-    /// </summary>
-    private void Stop()
-    {
-        winnerText.text = "Stop";
-        gameOverPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// 继续
-    /// </summary>
-    private void Continue()
-    {
-        gameOverPanel.SetActive(false);
     }
 }

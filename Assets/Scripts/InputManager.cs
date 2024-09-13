@@ -22,7 +22,7 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            InstanceTest.CallListenerClickLeft();
+            InstanceTest.CallListenerClickLeft(Input.mousePosition);
         }
     }
 }

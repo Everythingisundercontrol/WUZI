@@ -1,6 +1,6 @@
 ﻿public interface FsmState
 {
-    void OnEnter(Manager manager);
+    void OnEnter();
 
     void OnUpdate();
 

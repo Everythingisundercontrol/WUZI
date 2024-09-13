@@ -8,14 +8,14 @@ public class InstanceTest
 {
     private static InstanceTest _instance;
 
-    private static Action _actionOnADown;
-    private static Action _actionOnDDown;
-    private static Action _actionOnEscDown;
-    private static Action _actionOnClickLeft;
+    private static List<Action> _actionOnADown;
+    private static List<Action> _actionOnDDown;
+    private static List<Action> _actionOnEscDown;
+    private static List<Action<Vector3>> _actionOnClickLeft;
 
     public static InstanceTest GetInstance()
     {
-        return _instance == null ? _instance : new InstanceTest();
+        return _instance ?? new InstanceTest();
     }
 
     /// <summary>
@@ -23,7 +23,11 @@ public class InstanceTest
     /// </summary>
     public static void AddListenerADown(Action action)
     {
-        _actionOnADown = action;
+        if (_actionOnADown == null)
+        {
+            _actionOnADown = new List<Action>();
+        }
+        _actionOnADown.Add(action);
     }
 
     /// <summary>
@@ -31,7 +35,11 @@ public class InstanceTest
     /// </summary>
     public static void AddListenerDDown(Action action)
     {
-        _actionOnDDown = action;
+        if (_actionOnDDown == null)
+        {
+            _actionOnDDown = new List<Action>();
+        }
+        _actionOnDDown.Add(action);
     }
     
     /// <summary>
@@ -39,15 +47,36 @@ public class InstanceTest
     /// </summary>
     public static void AddListenerEscDown(Action action)
     {
-        _actionOnEscDown = action;
+        if (_actionOnEscDown == null)
+        {
+            _actionOnEscDown = new List<Action>();
+        }
+        _actionOnEscDown.Add(action);
     }
     
     /// <summary>
     /// 订阅左键点击
     /// </summary>
-    public static void AddListenerClickLeft(Action action)
+    public static void AddListenerClickLeft(Action<Vector3> action)
     {
-        _actionOnClickLeft = action;
+        if (_actionOnClickLeft == null)
+        {
+            _actionOnClickLeft = new List<Action<Vector3>>();
+        }
+        _actionOnClickLeft.Add(action);
+    }
+    
+    
+    
+    /// <summary>
+    /// 取消订阅左键点击
+    /// </summary>
+    public static void RemoveListenerClickLeft(Action<Vector3> action)
+    {
+        if (_actionOnClickLeft.Contains(action))
+        {
+            _actionOnClickLeft.Remove(action);
+        }
     }
     
     
@@ -57,9 +86,12 @@ public class InstanceTest
     /// <summary>
     /// 左键点击事件触发
     /// </summary>
-    public static void CallListenerClickLeft()
+    public static void CallListenerClickLeft(Vector3 pos)
     {
-        _actionOnClickLeft?.Invoke();
+        foreach (var clickLeftEvent in _actionOnClickLeft)
+        {
+            clickLeftEvent.Invoke(pos);
+        }
     }
     
     // ReSharper disable Unity.PerformanceAnalysis
@@ -68,7 +100,10 @@ public class InstanceTest
     /// </summary>
     public static void CallListenerADown()
     {
-        _actionOnADown?.Invoke();
+        foreach (var aDownEvent in _actionOnADown)
+        {
+            aDownEvent.Invoke();
+        }
     }
     
     // ReSharper disable Unity.PerformanceAnalysis
@@ -77,7 +112,11 @@ public class InstanceTest
     /// </summary>
     public static void CallListenerDDown()
     {
-        _actionOnDDown?.Invoke();
+        foreach (var dDownEvent in _actionOnDDown)
+        {
+            dDownEvent.Invoke();
+        }
+        
     }
 
     /// <summary>
@@ -85,6 +124,10 @@ public class InstanceTest
     /// </summary>
     public static void CallListenerEscDown()
     {
-        _actionOnEscDown?.Invoke();
+        foreach (var escDownEvent in _actionOnEscDown)
+        {
+            escDownEvent.Invoke();
+        }
+        
     }
 }
